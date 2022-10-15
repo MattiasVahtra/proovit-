@@ -16,30 +16,37 @@ public class MaxPaymentCalcTest {
         if ($(By.id("acceptPirukas")).isDisplayed()){
             $(By.id("acceptPirukas")).click();
         }
-        
+
         $(By.linkText("Maksimaalne kuumakse")).click();
 
         $(By.name("dependent-persons")).shouldHave(Condition.value("1"));
+        $(By.name("marital-status-married")).shouldBe(Condition.checked);
 
         $(By.name("monthly-income")).shouldHave(Condition.value("900"));
         $(By.xpath("//*[@id=\"max-payment\"]/div[1]/div[3]/div[2]")).shouldHave(Condition.text("280.32"));
 
     }
-    @Test
-    public void CanChangePrice() {
-        open("https://www.lhv.ee/et/liising#monthly-payment");
 
-        $(By.id("acceptPirukas")).click();
-        $(By.name("price")).setValue("35 000");
-        $(By.name("price")).shouldHave(Condition.value("35 000"));
+    //I figured out that I can just use the correct url instead of clicking on the tab, but I left it in because it was part of the learning process
+    @Test
+    public void ChangingFieldsGivesCorrectPayment() {
+        open("https://www.lhv.ee/et/liising#max-payment");
+
+        if ($(By.id("acceptPirukas")).isDisplayed()){
+            $(By.id("acceptPirukas")).click();
+        }
+
+        $(By.xpath("//*[@id=\"max-payment\"]/div[1]/div[3]/div[2]")).shouldHave(Condition.text("280.32"));
+
+
+        $(By.name("dependent-persons")).selectOptionByValue("3");
+        $(By.xpath("//*[@id=\"max-payment\"]/div[1]/div[3]/div[2]")).shouldHave(Condition.text("197.39"));
+
+        $(By.name("monthly-income")).setValue("1000");
+        $(By.xpath("//*[@id=\"max-payment\"]/div[1]/div[3]/div[2]")).shouldHave(Condition.text("260.62"));
+
+        $(By.name("monthly-income")).shouldHave(Condition.value("1000"));
+        $(By.name("dependent-persons")).shouldHave(Condition.value("3"));
 
     }
-
-//    @Test
-//    public void CanChangePercent() {
-//        open("https://www.cooppank.ee/autoliising");
-//
-//        $(By.name("esmaneprots")).setValue("30").pressEnter();
-//        $(By.name("esmaneprots")).shouldHave(Condition.value("30"));
-//    }
 }
